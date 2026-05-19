@@ -66,7 +66,7 @@ const RecipientOnboarding = () => {
         coordinates: formData.location.coordinates
       };
 
-      await axios.post(`\${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/recipient/onboard`, payload, {
+      await axios.post(`\https://lifegift.onrender.com/api/recipient/onboard`, payload, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
       navigate('/recipient-dashboard');

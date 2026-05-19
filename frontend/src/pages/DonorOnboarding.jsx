@@ -67,7 +67,7 @@ const DonorOnboarding = () => {
         weight: parseFloat(formData.weight)
       };
 
-      await axios.post(`\${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/donor/profile`, payload, {
+      await axios.post(`\https://lifegift.onrender.com/api/donor/profile`, payload, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
       navigate('/donor-dashboard');

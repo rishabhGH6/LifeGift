@@ -45,7 +45,7 @@ const HospitalDashboard = () => {
 
   const fetchDashboardData = async () => {
     try {
-      const res = await axios.get(`\${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/hospital/dashboard`, {
+      const res = await axios.get(`\https://lifegift.onrender.com/api/hospital/dashboard`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
       setData(res.data);
@@ -64,7 +64,7 @@ const HospitalDashboard = () => {
 
   const fetchSosRequests = async () => {
     try {
-      const res = await axios.get(`\${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/hospital/sos-requests`, {
+      const res = await axios.get(`\https://lifegift.onrender.com/api/hospital/sos-requests`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
       setSosRequests(res.data);
@@ -76,7 +76,7 @@ const HospitalDashboard = () => {
   const handleResolveSos = async (id) => {
     setResolvingId(id);
     try {
-      await axios.put(`\${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/hospital/sos-requests/${id}/resolve`, {}, {
+      await axios.put(`\https://lifegift.onrender.com/api/hospital/sos-requests/${id}/resolve`, {}, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
       // Optimistically remove from list immediately
@@ -117,7 +117,7 @@ const HospitalDashboard = () => {
     const newUnits = Math.max(0, currentUnits + change);
     
     try {
-      const res = await axios.put(`\${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/hospital/inventory`, {
+      const res = await axios.put(`\https://lifegift.onrender.com/api/hospital/inventory`, {
         bloodInventory: { [bloodGroup]: newUnits }
       }, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
@@ -137,7 +137,7 @@ const HospitalDashboard = () => {
   // Save manual input edit
   const saveEditing = async (bloodGroup) => {
     try {
-      const res = await axios.put(`\${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/hospital/inventory`, {
+      const res = await axios.put(`\https://lifegift.onrender.com/api/hospital/inventory`, {
         bloodInventory: { [bloodGroup]: Number(editValue) }
       }, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
@@ -168,7 +168,7 @@ const HospitalDashboard = () => {
     }
 
     try {
-      const res = await axios.put(`\${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/hospital/inventory`, {
+      const res = await axios.put(`\https://lifegift.onrender.com/api/hospital/inventory`, {
         bloodInventory: restockData
       }, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
@@ -183,7 +183,7 @@ const HospitalDashboard = () => {
   // Manage donation intents (Approve / Reject)
   const handleIntentStatusChange = async (intentId, newStatus) => {
     try {
-      const res = await axios.put(`\${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/hospital/intent/${intentId}`, {
+      const res = await axios.put(`\https://lifegift.onrender.com/api/hospital/intent/${intentId}`, {
         status: newStatus
       }, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
@@ -200,7 +200,7 @@ const HospitalDashboard = () => {
     if (!alertForm.message.trim()) return;
 
     try {
-      const res = await axios.post(`\${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/hospital/alert`, alertForm, {
+      const res = await axios.post(`\https://lifegift.onrender.com/api/hospital/alert`, alertForm, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
       setData(res.data);
@@ -213,7 +213,7 @@ const HospitalDashboard = () => {
   // Delete/dismiss alert
   const handleDeleteAlert = async (alertId) => {
     try {
-      const res = await axios.delete(`\${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/hospital/alert/${alertId}`, {
+      const res = await axios.delete(`\https://lifegift.onrender.com/api/hospital/alert/${alertId}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
       setData(res.data);

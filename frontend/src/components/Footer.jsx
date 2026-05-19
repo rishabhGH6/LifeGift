@@ -9,7 +9,7 @@ const Footer = () => {
   useEffect(() => {
     const checkBackend = async () => {
       try {
-        const response = await axios.get(`\${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/status`);
+        const response = await axios.get(`\https://lifegift.onrender.com/api/status`);
         if (response.data.status === 'success') {
           setApiStatus('System Online - Backend Connected');
         }

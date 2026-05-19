@@ -36,7 +36,7 @@ const Login = () => {
     const endpoint = isLogin ? '/api/auth/login' : '/api/auth/register';
     
     try {
-      const res = await axios.post(`\${import.meta.env.VITE_API_URL || 'http://localhost:5000'}${endpoint}`, formData);
+      const res = await axios.post(`\https://lifegift.onrender.com${endpoint}`, formData);
       const { token, role: userRole } = res.data;
       
       localStorage.setItem('token', token);

@@ -184,7 +184,7 @@ const HealthDashboard = ({ vitals, prescriptions, onUploadSuccess }) => {
     reader.onload = async () => {
       setIsUploading(true);
       try {
-        const res = await axios.post(`\${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/donor/upload-prescription`, {
+        const res = await axios.post(`\https://lifegift.onrender.com/api/donor/upload-prescription`, {
           name: file.name,
           fileData: reader.result
         }, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }});
@@ -328,7 +328,7 @@ const HospitalFinder = ({ profile, hospitals, setHospitals }) => {
       lat = pos.coords.latitude;
       lon = pos.coords.longitude;
 
-      const res = await axios.get(`\${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/donor/nearby-hospitals?lat=${lat}&lon=${lon}&radius=20000`, {
+      const res = await axios.get(`\https://lifegift.onrender.com/api/donor/nearby-hospitals?lat=${lat}&lon=${lon}&radius=20000`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
       setHospitals(res.data);
@@ -338,7 +338,7 @@ const HospitalFinder = ({ profile, hospitals, setHospitals }) => {
       if (profile?.location?.coordinates && (profile.location.coordinates[0] !== 0 || profile.location.coordinates[1] !== 0)) {
         const [pLon, pLat] = profile.location.coordinates;
         try {
-          const res = await axios.get(`\${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/donor/nearby-hospitals?lat=${pLat}&lon=${pLon}&radius=20000`, {
+          const res = await axios.get(`\https://lifegift.onrender.com/api/donor/nearby-hospitals?lat=${pLat}&lon=${pLon}&radius=20000`, {
             headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
           });
           setHospitals(res.data);
@@ -352,7 +352,7 @@ const HospitalFinder = ({ profile, hospitals, setHospitals }) => {
       const fallbackLat = 28.6139;
       const fallbackLon = 77.2090;
       try {
-        const res = await axios.get(`\${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/donor/nearby-hospitals?lat=${fallbackLat}&lon=${fallbackLon}&radius=20000`, {
+        const res = await axios.get(`\https://lifegift.onrender.com/api/donor/nearby-hospitals?lat=${fallbackLat}&lon=${fallbackLon}&radius=20000`, {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
         });
         setHospitals(res.data);
@@ -466,7 +466,7 @@ const AppointmentBooking = ({ hospitals }) => {
   useEffect(() => {
     const fetchAppointments = async () => {
       try {
-        const res = await axios.get(`\${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/donor/appointments`, {
+        const res = await axios.get(`\https://lifegift.onrender.com/api/donor/appointments`, {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
         });
         setBookedAppointments(res.data);
@@ -484,7 +484,7 @@ const AppointmentBooking = ({ hospitals }) => {
       return;
     }
     try {
-      const res = await axios.post(`\${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/donor/book-appointment`, {
+      const res = await axios.post(`\https://lifegift.onrender.com/api/donor/book-appointment`, {
         hospitalName: selectedHospital,
         date,
         time,
@@ -635,7 +635,7 @@ const AIAssistant = ({ profile, onReportSaved }) => {
 
     try {
       console.log('Sending message to AI Assistant...');
-      const res = await axios.post(`\${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/donor/ai-chat`, {
+      const res = await axios.post(`\https://lifegift.onrender.com/api/donor/ai-chat`, {
         messages: newMessages,
         donorData: {
           bloodType: profile?.bloodType || 'Unknown',
@@ -669,7 +669,7 @@ const AIAssistant = ({ profile, onReportSaved }) => {
     });
 
     try {
-      const res = await axios.post(`\${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/donor/save-ai-report`, {
+      const res = await axios.post(`\https://lifegift.onrender.com/api/donor/save-ai-report`, {
         title: `AI Screening - ${new Date().toLocaleDateString()}`,
         content: fullReport.trim()
       }, {
@@ -789,7 +789,7 @@ const DonorDashboard = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const res = await axios.get(`\${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/donor/profile`, {
+        const res = await axios.get(`\https://lifegift.onrender.com/api/donor/profile`, {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
         });
         setProfile(res.data);

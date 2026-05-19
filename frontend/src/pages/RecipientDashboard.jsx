@@ -112,7 +112,7 @@ const SosPanel = ({ profile }) => {
     if (!window.confirm('Are you sure you want to trigger an Emergency Blood Request? This will alert nearby donors and hospitals.')) return;
     setSosStatus('loading');
     try {
-      await axios.post(`\${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/recipient/sos`, {}, {
+      await axios.post(`\https://lifegift.onrender.com/api/recipient/sos`, {}, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
       setSosStatus('active');
@@ -191,7 +191,7 @@ const HospitalFinder = ({ profile, hospitals, setHospitals }) => {
         console.log("Using browser geolocation coordinates:", lat, lon);
       }
 
-      const res = await axios.get(`\${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/recipient/nearby-hospitals?lat=${lat}&lon=${lon}&radius=20000`, {
+      const res = await axios.get(`\https://lifegift.onrender.com/api/recipient/nearby-hospitals?lat=${lat}&lon=${lon}&radius=20000`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
       setHospitals(res.data);
@@ -202,7 +202,7 @@ const HospitalFinder = ({ profile, hospitals, setHospitals }) => {
       const fallbackLat = 28.6139;
       const fallbackLon = 77.2090;
       try {
-        const res = await axios.get(`\${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/recipient/nearby-hospitals?lat=${fallbackLat}&lon=${fallbackLon}&radius=20000`, {
+        const res = await axios.get(`\https://lifegift.onrender.com/api/recipient/nearby-hospitals?lat=${fallbackLat}&lon=${fallbackLon}&radius=20000`, {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
         });
         setHospitals(res.data);
@@ -286,7 +286,7 @@ const AIAssistant = ({ profile, onReportSaved }) => {
     setIsTyping(true);
 
     try {
-      const res = await axios.post(`\${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/recipient/ai-chat`, {
+      const res = await axios.post(`\https://lifegift.onrender.com/api/recipient/ai-chat`, {
         messages: newMessages,
         recipientData: {
           bloodType: profile?.bloodType,
@@ -356,7 +356,7 @@ const BloodAvailabilityChecker = () => {
     setChecking(true);
     setStatusMessage(null);
     try {
-      const res = await axios.get(`\${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/recipient/check-blood/${encodeURIComponent(bloodGroup)}`, {
+      const res = await axios.get(`\https://lifegift.onrender.com/api/recipient/check-blood/${encodeURIComponent(bloodGroup)}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
       setIsAvailable(res.data.available);
@@ -433,7 +433,7 @@ const AppointmentBooking = ({ hospitals }) => {
   useEffect(() => {
     const fetchAppointments = async () => {
       try {
-        const res = await axios.get(`\${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/recipient/appointments`, {
+        const res = await axios.get(`\https://lifegift.onrender.com/api/recipient/appointments`, {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
         });
         setBookedAppointments(res.data);
@@ -451,7 +451,7 @@ const AppointmentBooking = ({ hospitals }) => {
       return;
     }
     try {
-      const res = await axios.post(`\${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/recipient/book-appointment`, {
+      const res = await axios.post(`\https://lifegift.onrender.com/api/recipient/book-appointment`, {
         hospitalName: selectedHospital,
         date,
         time,
@@ -598,7 +598,7 @@ const RecipientDashboard = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const res = await axios.get(`\${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/recipient/profile`, {
+        const res = await axios.get(`\https://lifegift.onrender.com/api/recipient/profile`, {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
         });
         setProfile(res.data);
