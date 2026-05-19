@@ -446,16 +446,16 @@ a {
 .hover\:scale-\[1\.02\]:hover { transform: scale(1.02); }
 
 @media (min-width: 640px) {
-  .sm:grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .sm\:grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 }
 
 @media (min-width: 768px) {
-  .md:flex-row { flex-direction: row; }
-  .md:items-center { align-items: center; }
+  .md\:flex-row { flex-direction: row; }
+  .md\:items-center { align-items: center; }
 }
 
 @media (max-width: 640px) {
-  .hidden.sm:block { display: none !important; }
+  .hidden.sm\:block { display: none !important; }
 }
 
 /* Custom Spacing and Transitions for Redesigned Cards */
