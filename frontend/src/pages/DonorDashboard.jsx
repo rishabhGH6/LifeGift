@@ -137,12 +137,12 @@ const ImpactTimeline = ({ donations }) => {
   ];
 
   return (
-    <div className="bento-item col-span-4">
-      <h3 className="text-lg font-bold text-white mb-6 flex items-center gap-2">
+    <div className="bento-item col-span-4 flex flex-col h-[320px]">
+      <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2 shrink-0">
         Live Impact Timeline <span className="flex h-2 w-2 rounded-full bg-red-500 animate-pulse"></span>
       </h3>
       
-      <div className="grid grid-cols-2 gap-4 mb-8">
+      <div className="grid grid-cols-2 gap-4 mb-4 shrink-0">
         {stats.map((s, i) => (
           <div key={i} className="bg-white/5 p-4 rounded-2xl border border-white/10">
             <s.icon size={20} className="text-red-500" />
@@ -152,7 +152,7 @@ const ImpactTimeline = ({ donations }) => {
         ))}
       </div>
 
-      <div className="relative pl-6 border-l-2 border-white/10 space-y-6">
+      <div className="relative pl-6 border-l-2 border-white/10 space-y-6 overflow-y-auto custom-scrollbar flex-1 pb-2">
         {(donations || []).length > 0 ? donations.map((d, i) => (
           <div key={i} className="relative">
             <div className="absolute -left-[31px] top-1 w-2.5 h-2.5 rounded-full bg-red-500 ring-4 ring-red-500/20"></div>
@@ -184,7 +184,7 @@ const HealthDashboard = ({ vitals, prescriptions, onUploadSuccess }) => {
     reader.onload = async () => {
       setIsUploading(true);
       try {
-        const res = await axios.post('http://localhost:5000/api/donor/upload-prescription', {
+        const res = await axios.post(`\${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/donor/upload-prescription`, {
           name: file.name,
           fileData: reader.result
         }, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }});
@@ -311,11 +311,11 @@ const HealthDashboard = ({ vitals, prescriptions, onUploadSuccess }) => {
 
 const HospitalFinder = ({ profile, hospitals, setHospitals }) => {
   const [loading, setLoading] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [showAll, setShowAll] = useState(false);
 
   const findHospitals = async () => {
     setLoading(true);
-    setCurrentPage(1);
+    setShowAll(false);
     try {
       let lat, lon;
       const pos = await new Promise((resolve, reject) => {
@@ -328,7 +328,7 @@ const HospitalFinder = ({ profile, hospitals, setHospitals }) => {
       lat = pos.coords.latitude;
       lon = pos.coords.longitude;
 
-      const res = await axios.get(`http://localhost:5000/api/donor/nearby-hospitals?lat=${lat}&lon=${lon}&radius=20000`, {
+      const res = await axios.get(`\${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/donor/nearby-hospitals?lat=${lat}&lon=${lon}&radius=20000`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
       setHospitals(res.data);
@@ -338,7 +338,7 @@ const HospitalFinder = ({ profile, hospitals, setHospitals }) => {
       if (profile?.location?.coordinates && (profile.location.coordinates[0] !== 0 || profile.location.coordinates[1] !== 0)) {
         const [pLon, pLat] = profile.location.coordinates;
         try {
-          const res = await axios.get(`http://localhost:5000/api/donor/nearby-hospitals?lat=${pLat}&lon=${pLon}&radius=20000`, {
+          const res = await axios.get(`\${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/donor/nearby-hospitals?lat=${pLat}&lon=${pLon}&radius=20000`, {
             headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
           });
           setHospitals(res.data);
@@ -352,7 +352,7 @@ const HospitalFinder = ({ profile, hospitals, setHospitals }) => {
       const fallbackLat = 28.6139;
       const fallbackLon = 77.2090;
       try {
-        const res = await axios.get(`http://localhost:5000/api/donor/nearby-hospitals?lat=${fallbackLat}&lon=${fallbackLon}&radius=20000`, {
+        const res = await axios.get(`\${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/donor/nearby-hospitals?lat=${fallbackLat}&lon=${fallbackLon}&radius=20000`, {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
         });
         setHospitals(res.data);
@@ -368,39 +368,7 @@ const HospitalFinder = ({ profile, hospitals, setHospitals }) => {
     findHospitals();
   }, []);
 
-  const ITEMS_PER_PAGE = 10;
-  const totalPages = Math.ceil(hospitals.length / ITEMS_PER_PAGE);
-
-  const currentHospitals = hospitals.slice(
-    (currentPage - 1) * ITEMS_PER_PAGE,
-    currentPage * ITEMS_PER_PAGE
-  );
-
-  const handlePageChange = (page) => {
-    setCurrentPage(page);
-    const container = document.getElementById('hospital-list-container');
-    if (container) {
-      container.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-  };
-
-  const getPageNumbers = () => {
-    const pages = [];
-    if (totalPages <= 7) {
-      for (let i = 1; i <= totalPages; i++) {
-        pages.push(i);
-      }
-    } else {
-      if (currentPage <= 4) {
-        pages.push(1, 2, 3, 4, 5, '...', totalPages);
-      } else if (currentPage >= totalPages - 3) {
-        pages.push(1, '...', totalPages - 4, totalPages - 3, totalPages - 2, totalPages - 1, totalPages);
-      } else {
-        pages.push(1, '...', currentPage - 1, currentPage, currentPage + 1, '...', totalPages);
-      }
-    }
-    return pages;
-  };
+  const displayedHospitals = showAll ? hospitals : hospitals.slice(0, 5);
 
   return (
     <div className="bento-item col-span-4 overflow-hidden flex flex-col">
@@ -418,14 +386,14 @@ const HospitalFinder = ({ profile, hospitals, setHospitals }) => {
         </button>
       </div>
       
-      <div id="hospital-list-container" className="space-y-3 overflow-y-auto pr-2 custom-scrollbar flex-1">
+      <div id="hospital-list-container" className="space-y-2 overflow-y-auto pr-2 custom-scrollbar flex-1">
         {loading ? (
           <div className="flex flex-col items-center justify-center py-10 gap-3">
             <Clock className="animate-spin text-red-500" size={32} />
             <p className="text-xs font-bold text-gray-400">Authenticating Location...</p>
           </div>
-        ) : currentHospitals.length > 0 ? currentHospitals.map((h, i) => (
-          <div key={i} className="flex flex-col p-4 bg-white/5 rounded-2xl border border-white/10 hover:border-red-500/50 transition-all shadow-sm hover:shadow-md group">
+        ) : displayedHospitals.length > 0 ? displayedHospitals.map((h, i) => (
+          <div key={i} className="flex flex-col p-3 bg-white/5 rounded-xl border border-white/10 hover:border-red-500/50 transition-all shadow-sm hover:shadow-md group">
             <div className="flex items-center justify-between">
               <p className="text-sm font-bold text-white truncate w-48 group-hover:text-red-400 transition-colors">{h.name}</p>
               <div className="flex items-center gap-2">
@@ -437,7 +405,7 @@ const HospitalFinder = ({ profile, hospitals, setHospitals }) => {
               </div>
             </div>
 
-            <div className="flex flex-col gap-1 mt-2">
+            <div className="flex flex-col gap-1 mt-1.5">
               <div className="flex items-center gap-2 text-[10px] text-gray-400">
                 <MapPin size={10} className="text-red-500" />
                 <p className="truncate">{h.address}</p>
@@ -448,7 +416,7 @@ const HospitalFinder = ({ profile, hospitals, setHospitals }) => {
               </div>
             </div>
 
-            <div className="flex items-center justify-between mt-3 pt-3 border-t border-white/5">
+            <div className="flex items-center justify-between mt-2 pt-2 border-t border-white/5">
               <span className={`text-[8px] font-black px-2 py-0.5 rounded-full ${h.openNow !== false ? 'bg-red-500/20 text-red-400' : 'bg-white/5 text-gray-500'}`}>
                 {h.openNow !== false ? 'READY FOR DONATION' : 'CLOSED NOW'}
               </span>
@@ -474,39 +442,13 @@ const HospitalFinder = ({ profile, hospitals, setHospitals }) => {
         )}
       </div>
 
-      {totalPages > 1 && (
-        <div className="flex items-center justify-center gap-1.5 mt-4 pt-3 border-t border-white/5 select-none">
+      {hospitals.length > 5 && (
+        <div className="flex items-center justify-center mt-4 pt-3 border-t border-white/5">
           <button
-            disabled={currentPage === 1}
-            onClick={() => handlePageChange(currentPage - 1)}
-            className="px-2.5 py-1.5 rounded-lg text-[10px] font-bold text-gray-400 bg-white/5 border border-white/10 hover:bg-white/10 disabled:opacity-30 disabled:hover:bg-white/5 transition-all cursor-pointer disabled:cursor-not-allowed"
+            onClick={() => setShowAll(!showAll)}
+            className="px-4 py-2 rounded-xl text-xs font-bold text-white bg-red-500/10 border border-red-500/20 hover:bg-red-500/20 transition-all w-full text-center"
           >
-            Prev
-          </button>
-          
-          {getPageNumbers().map((page, idx) => (
-            <button
-              key={idx}
-              disabled={page === '...'}
-              onClick={() => typeof page === 'number' && handlePageChange(page)}
-              className={`px-3 py-1.5 rounded-lg text-[10px] font-bold transition-all ${
-                page === currentPage
-                  ? 'bg-red-500 text-white shadow-md shadow-red-500/20'
-                  : page === '...'
-                    ? 'text-gray-600 bg-transparent'
-                    : 'text-gray-400 bg-white/5 border border-white/10 hover:bg-white/10 cursor-pointer'
-              }`}
-            >
-              {page}
-            </button>
-          ))}
-
-          <button
-            disabled={currentPage === totalPages}
-            onClick={() => handlePageChange(currentPage + 1)}
-            className="px-2.5 py-1.5 rounded-lg text-[10px] font-bold text-gray-400 bg-white/5 border border-white/10 hover:bg-white/10 disabled:opacity-30 disabled:hover:bg-white/5 transition-all cursor-pointer disabled:cursor-not-allowed"
-          >
-            Next
+            {showAll ? 'View Less' : 'View More Centers'}
           </button>
         </div>
       )}
@@ -524,7 +466,7 @@ const AppointmentBooking = ({ hospitals }) => {
   useEffect(() => {
     const fetchAppointments = async () => {
       try {
-        const res = await axios.get('http://localhost:5000/api/donor/appointments', {
+        const res = await axios.get(`\${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/donor/appointments`, {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
         });
         setBookedAppointments(res.data);
@@ -542,7 +484,7 @@ const AppointmentBooking = ({ hospitals }) => {
       return;
     }
     try {
-      const res = await axios.post('http://localhost:5000/api/donor/book-appointment', {
+      const res = await axios.post(`\${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/donor/book-appointment`, {
         hospitalName: selectedHospital,
         date,
         time,
@@ -693,7 +635,7 @@ const AIAssistant = ({ profile, onReportSaved }) => {
 
     try {
       console.log('Sending message to AI Assistant...');
-      const res = await axios.post('http://localhost:5000/api/donor/ai-chat', {
+      const res = await axios.post(`\${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/donor/ai-chat`, {
         messages: newMessages,
         donorData: {
           bloodType: profile?.bloodType || 'Unknown',
@@ -727,7 +669,7 @@ const AIAssistant = ({ profile, onReportSaved }) => {
     });
 
     try {
-      const res = await axios.post('http://localhost:5000/api/donor/save-ai-report', {
+      const res = await axios.post(`\${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/donor/save-ai-report`, {
         title: `AI Screening - ${new Date().toLocaleDateString()}`,
         content: fullReport.trim()
       }, {
@@ -741,7 +683,7 @@ const AIAssistant = ({ profile, onReportSaved }) => {
   };
 
   return (
-    <div className="bento-item col-span-4 flex flex-col h-[400px]">
+    <div className="bento-item col-span-4 flex flex-col h-[320px]">
       <div className="flex items-center gap-2 mb-4">
         <div className="bg-red-500/10 p-2 rounded-xl text-red-500"><Activity size={18} /></div>
         <h3 className="text-lg font-bold text-white">AI Health Assistant</h3>
@@ -847,7 +789,7 @@ const DonorDashboard = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const res = await axios.get('http://localhost:5000/api/donor/profile', {
+        const res = await axios.get(`\${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/donor/profile`, {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
         });
         setProfile(res.data);

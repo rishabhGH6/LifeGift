@@ -9,7 +9,7 @@ const Footer = () => {
   useEffect(() => {
     const checkBackend = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/status');
+        const response = await axios.get(`\${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/status`);
         if (response.data.status === 'success') {
           setApiStatus('System Online - Backend Connected');
         }
@@ -44,11 +44,11 @@ const Footer = () => {
           <div className="footer-col">
             <h4>Quick Links</h4>
             <ul className="footer-links">
-              <li><a href="#home">Home</a></li>
-              <li><a href="#about">About Us</a></li>
-              <li><a href="#process">How it Works</a></li>
-              <li><a href="#impact">Our Impact</a></li>
-              <li><a href="#">FAQ</a></li>
+              <li><a href="/">Home</a></li>
+              <li><a href="/about">About Us</a></li>
+              <li><a href="/#process">How it Works</a></li>
+              <li><a href="/impact">Our Impact</a></li>
+              <li><a href="/#faq">FAQ</a></li>
             </ul>
           </div>
 

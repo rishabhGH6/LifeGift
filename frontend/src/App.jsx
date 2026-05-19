@@ -7,6 +7,8 @@ import DonorOnboarding from './pages/DonorOnboarding';
 import RecipientOnboarding from './pages/RecipientOnboarding';
 import RecipientDashboard from './pages/RecipientDashboard';
 import HospitalDashboard from './pages/HospitalDashboard';
+import About from './pages/About';
+import Impact from './pages/Impact';
 import './index.css';
 
 function App() {
@@ -15,6 +17,8 @@ function App() {
       <div className="app">
         <Routes>
           <Route path="/" element={<LandingPage />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/impact" element={<Impact />} />
           <Route path="/login" element={<Login />} />
           <Route path="/donor-dashboard" element={<DonorDashboard />} />
           <Route path="/donor-onboarding" element={<DonorOnboarding />} />

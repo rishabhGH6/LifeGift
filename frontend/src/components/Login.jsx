@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Heart, Mail, Lock, User, ShieldCheck, ArrowRight } from 'lucide-react';
 import axios from 'axios';
@@ -15,6 +15,16 @@ const Login = () => {
   });
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const type = params.get('type');
+    if (type === 'donor' || type === 'recipient' || type === 'hospital') {
+      setIsLogin(false);
+      setFormData(prev => ({ ...prev, role: type }));
+    }
+  }, [location.search]);
 
   const { name, email, password, role } = formData;
 
@@ -26,7 +36,7 @@ const Login = () => {
     const endpoint = isLogin ? '/api/auth/login' : '/api/auth/register';
     
     try {
-      const res = await axios.post(`http://localhost:5000${endpoint}`, formData);
+      const res = await axios.post(`\${import.meta.env.VITE_API_URL || 'http://localhost:5000'}${endpoint}`, formData);
       const { token, role: userRole } = res.data;
       
       localStorage.setItem('token', token);

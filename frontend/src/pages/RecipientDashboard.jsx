@@ -112,7 +112,7 @@ const SosPanel = ({ profile }) => {
     if (!window.confirm('Are you sure you want to trigger an Emergency Blood Request? This will alert nearby donors and hospitals.')) return;
     setSosStatus('loading');
     try {
-      await axios.post('http://localhost:5000/api/recipient/sos', {}, {
+      await axios.post(`\${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/recipient/sos`, {}, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
       setSosStatus('active');
@@ -164,11 +164,11 @@ const SosPanel = ({ profile }) => {
 
 const HospitalFinder = ({ profile, hospitals, setHospitals }) => {
   const [loading, setLoading] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [showAll, setShowAll] = useState(false);
 
   const findHospitals = async () => {
     setLoading(true);
-    setCurrentPage(1);
+    setShowAll(false);
     try {
       let lat, lon;
 
@@ -191,7 +191,7 @@ const HospitalFinder = ({ profile, hospitals, setHospitals }) => {
         console.log("Using browser geolocation coordinates:", lat, lon);
       }
 
-      const res = await axios.get(`http://localhost:5000/api/recipient/nearby-hospitals?lat=${lat}&lon=${lon}&radius=20000`, {
+      const res = await axios.get(`\${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/recipient/nearby-hospitals?lat=${lat}&lon=${lon}&radius=20000`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
       setHospitals(res.data);
@@ -202,7 +202,7 @@ const HospitalFinder = ({ profile, hospitals, setHospitals }) => {
       const fallbackLat = 28.6139;
       const fallbackLon = 77.2090;
       try {
-        const res = await axios.get(`http://localhost:5000/api/recipient/nearby-hospitals?lat=${fallbackLat}&lon=${fallbackLon}&radius=20000`, {
+        const res = await axios.get(`\${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/recipient/nearby-hospitals?lat=${fallbackLat}&lon=${fallbackLon}&radius=20000`, {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
         });
         setHospitals(res.data);
@@ -218,39 +218,7 @@ const HospitalFinder = ({ profile, hospitals, setHospitals }) => {
     if (profile) findHospitals();
   }, [profile]);
 
-  const ITEMS_PER_PAGE = 10;
-  const totalPages = Math.ceil(hospitals.length / ITEMS_PER_PAGE);
-
-  const currentHospitals = hospitals.slice(
-    (currentPage - 1) * ITEMS_PER_PAGE,
-    currentPage * ITEMS_PER_PAGE
-  );
-
-  const handlePageChange = (page) => {
-    setCurrentPage(page);
-    const container = document.getElementById('hospital-list-container');
-    if (container) {
-      container.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-  };
-
-  const getPageNumbers = () => {
-    const pages = [];
-    if (totalPages <= 7) {
-      for (let i = 1; i <= totalPages; i++) {
-        pages.push(i);
-      }
-    } else {
-      if (currentPage <= 4) {
-        pages.push(1, 2, 3, 4, 5, '...', totalPages);
-      } else if (currentPage >= totalPages - 3) {
-        pages.push(1, '...', totalPages - 4, totalPages - 3, totalPages - 2, totalPages - 1, totalPages);
-      } else {
-        pages.push(1, '...', currentPage - 1, currentPage, currentPage + 1, '...', totalPages);
-      }
-    }
-    return pages;
-  };
+  const displayedHospitals = showAll ? hospitals : hospitals.slice(0, 5);
 
   return (
     <div className="bento-item col-span-4 overflow-hidden flex flex-col">
@@ -264,23 +232,23 @@ const HospitalFinder = ({ profile, hospitals, setHospitals }) => {
         </button>
       </div>
       
-      <div id="hospital-list-container" className="space-y-3 overflow-y-auto pr-2 custom-scrollbar flex-1">
+      <div id="hospital-list-container" className="space-y-2 overflow-y-auto pr-2 custom-scrollbar flex-1">
         {loading ? (
           <div className="flex flex-col items-center justify-center py-10 gap-3">
             <Clock className="animate-spin text-blue-500" size={32} />
             <p className="text-xs font-bold text-gray-400">Locating Facilities...</p>
           </div>
-        ) : currentHospitals.length > 0 ? currentHospitals.map((h, i) => (
-          <div key={i} className="flex flex-col p-4 bg-white/5 rounded-2xl border border-white/10 hover:border-blue-500/50 transition-all shadow-sm">
+        ) : displayedHospitals.length > 0 ? displayedHospitals.map((h, i) => (
+          <div key={i} className="flex flex-col p-3 bg-white/5 rounded-xl border border-white/10 hover:border-blue-500/50 transition-all shadow-sm">
             <div className="flex items-center justify-between">
               <p className="text-sm font-bold text-white truncate w-48">{h.name}</p>
               <span className="text-[10px] font-black text-blue-400 bg-blue-400/10 px-2 py-0.5 rounded-lg border border-blue-400/20">{h.distance?.toFixed(1)} km</span>
             </div>
-            <div className="flex flex-col gap-1 mt-2">
+            <div className="flex flex-col gap-1 mt-1.5">
               <div className="flex items-center gap-2 text-[10px] text-gray-400"><MapPin size={10} className="text-blue-500" /><p className="truncate">{h.address}</p></div>
               <div className="flex items-center gap-2 text-[10px] text-gray-400 font-medium"><Activity size={10} className="text-blue-400" /><p>{h.phone}</p></div>
             </div>
-            <div className="flex items-center justify-between mt-3 pt-3 border-t border-white/5">
+            <div className="flex items-center justify-between mt-2 pt-2 border-t border-white/5">
               <a href={`https://www.google.com/maps/dir/?api=1&destination=${h.lat},${h.lon}`} target="_blank" rel="noreferrer" className="text-[10px] font-bold text-blue-400 hover:underline">Get Directions</a>
             </div>
           </div>
@@ -289,39 +257,13 @@ const HospitalFinder = ({ profile, hospitals, setHospitals }) => {
         )}
       </div>
 
-      {totalPages > 1 && (
-        <div className="flex items-center justify-center gap-1.5 mt-4 pt-3 border-t border-white/5 select-none">
+      {hospitals.length > 5 && (
+        <div className="flex items-center justify-center mt-4 pt-3 border-t border-white/5">
           <button
-            disabled={currentPage === 1}
-            onClick={() => handlePageChange(currentPage - 1)}
-            className="px-2.5 py-1.5 rounded-lg text-[10px] font-bold text-gray-400 bg-white/5 border border-white/10 hover:bg-white/10 disabled:opacity-30 disabled:hover:bg-white/5 transition-all cursor-pointer disabled:cursor-not-allowed"
+            onClick={() => setShowAll(!showAll)}
+            className="px-4 py-2 rounded-xl text-xs font-bold text-white bg-blue-500/10 border border-blue-500/20 hover:bg-blue-500/20 transition-all w-full text-center"
           >
-            Prev
-          </button>
-          
-          {getPageNumbers().map((page, idx) => (
-            <button
-              key={idx}
-              disabled={page === '...'}
-              onClick={() => typeof page === 'number' && handlePageChange(page)}
-              className={`px-3 py-1.5 rounded-lg text-[10px] font-bold transition-all ${
-                page === currentPage
-                  ? 'bg-blue-500 text-white shadow-md shadow-blue-500/20'
-                  : page === '...'
-                    ? 'text-gray-600 bg-transparent'
-                    : 'text-gray-400 bg-white/5 border border-white/10 hover:bg-white/10 cursor-pointer'
-              }`}
-            >
-              {page}
-            </button>
-          ))}
-
-          <button
-            disabled={currentPage === totalPages}
-            onClick={() => handlePageChange(currentPage + 1)}
-            className="px-2.5 py-1.5 rounded-lg text-[10px] font-bold text-gray-400 bg-white/5 border border-white/10 hover:bg-white/10 disabled:opacity-30 disabled:hover:bg-white/5 transition-all cursor-pointer disabled:cursor-not-allowed"
-          >
-            Next
+            {showAll ? 'View Less' : 'View More Centers'}
           </button>
         </div>
       )}
@@ -344,7 +286,7 @@ const AIAssistant = ({ profile, onReportSaved }) => {
     setIsTyping(true);
 
     try {
-      const res = await axios.post('http://localhost:5000/api/recipient/ai-chat', {
+      const res = await axios.post(`\${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/recipient/ai-chat`, {
         messages: newMessages,
         recipientData: {
           bloodType: profile?.bloodType,
@@ -363,7 +305,7 @@ const AIAssistant = ({ profile, onReportSaved }) => {
   };
 
   return (
-    <div className="bento-item col-span-8 flex flex-col h-[400px]">
+    <div className="bento-item col-span-8 flex flex-col h-[320px]">
       <div className="flex items-center gap-2 mb-4">
         <div className="bg-blue-500/10 p-2 rounded-xl text-blue-500"><Activity size={18} /></div>
         <h3 className="text-lg font-bold text-white">AI Support Assistant</h3>
@@ -398,6 +340,89 @@ const AIAssistant = ({ profile, onReportSaved }) => {
   );
 };
 
+const BloodAvailabilityChecker = () => {
+  const [bloodGroup, setBloodGroup] = useState('');
+  const [statusMessage, setStatusMessage] = useState(null);
+  const [isAvailable, setIsAvailable] = useState(false);
+  const [checking, setChecking] = useState(false);
+
+  const checkAvailability = async (e) => {
+    e.preventDefault();
+    if (!bloodGroup) {
+      setStatusMessage("Please select a blood group.");
+      setIsAvailable(false);
+      return;
+    }
+    setChecking(true);
+    setStatusMessage(null);
+    try {
+      const res = await axios.get(`\${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/recipient/check-blood/${encodeURIComponent(bloodGroup)}`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+      });
+      setIsAvailable(res.data.available);
+      if (res.data.available) {
+        setStatusMessage("Yes, this blood group is available in our stock.");
+      } else {
+        setStatusMessage("Sorry, this blood group is currently not available.");
+      }
+    } catch (err) {
+      console.error(err);
+      setStatusMessage("Error checking availability. Please try again.");
+      setIsAvailable(false);
+    } finally {
+      setChecking(false);
+    }
+  };
+
+  return (
+    <div className="bento-item col-span-4 mt-6 border border-white/10 bg-white/5 p-8 rounded-3xl flex flex-col justify-between">
+      <div>
+        <div className="flex items-center gap-3 mb-6">
+          <div className="bg-red-500/10 p-3 rounded-2xl text-red-500 border border-red-500/20">
+            <Droplets size={24} />
+          </div>
+          <div>
+            <h3 className="text-xl font-bold text-white">Check Blood Stock</h3>
+            <p className="text-xs text-gray-400">Find real-time availability</p>
+          </div>
+        </div>
+
+        <form onSubmit={checkAvailability} className="space-y-4">
+          <div className="flex flex-col gap-2">
+            <label className="text-sm font-semibold text-gray-400">Select Blood Group</label>
+            <select 
+              value={bloodGroup}
+              onChange={(e) => setBloodGroup(e.target.value)}
+              className="w-full border border-white/10 text-white rounded-2xl px-5 py-4 focus:outline-none focus:border-red-500 font-medium"
+              style={{ backgroundColor: '#121a28', color: '#ffffff' }}
+            >
+              <option value="" style={{ backgroundColor: '#121a28', color: '#ffffff' }}>-- Choose --</option>
+              {['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'].map(bg => (
+                <option key={bg} value={bg} style={{ backgroundColor: '#121a28', color: '#ffffff' }}>{bg}</option>
+              ))}
+            </select>
+          </div>
+
+          <button 
+            type="submit" 
+            disabled={checking}
+            className="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-4 rounded-2xl transition-all shadow-lg shadow-red-500/20 disabled:opacity-50"
+          >
+            {checking ? 'Checking...' : 'Check Availability'}
+          </button>
+        </form>
+      </div>
+
+      {statusMessage && (
+        <div className={`mt-6 p-4 rounded-2xl border flex items-center gap-3 ${isAvailable ? 'bg-green-500/10 border-green-500/20 text-green-400' : 'bg-orange-500/10 border-orange-500/20 text-orange-400'}`}>
+          {isAvailable ? <CheckCircle2 size={24} className="shrink-0" /> : <AlertTriangle size={24} className="shrink-0" />}
+          <p className="text-sm font-semibold">{statusMessage}</p>
+        </div>
+      )}
+    </div>
+  );
+};
+
 const AppointmentBooking = ({ hospitals }) => {
   const [selectedHospital, setSelectedHospital] = useState('');
   const [date, setDate] = useState('');
@@ -408,7 +433,7 @@ const AppointmentBooking = ({ hospitals }) => {
   useEffect(() => {
     const fetchAppointments = async () => {
       try {
-        const res = await axios.get('http://localhost:5000/api/recipient/appointments', {
+        const res = await axios.get(`\${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/recipient/appointments`, {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
         });
         setBookedAppointments(res.data);
@@ -426,7 +451,7 @@ const AppointmentBooking = ({ hospitals }) => {
       return;
     }
     try {
-      const res = await axios.post('http://localhost:5000/api/recipient/book-appointment', {
+      const res = await axios.post(`\${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/recipient/book-appointment`, {
         hospitalName: selectedHospital,
         date,
         time,
@@ -447,7 +472,7 @@ const AppointmentBooking = ({ hospitals }) => {
   };
 
   return (
-    <div className="bento-item col-span-12 mt-6 border border-white/10 bg-white/5 p-8 rounded-3xl">
+    <div className="bento-item col-span-8 mt-6 border border-white/10 bg-white/5 p-8 rounded-3xl">
       <div className="flex items-center gap-3 mb-6">
         <div className="bg-blue-500/10 p-3 rounded-2xl text-blue-500 border border-blue-500/20">
           <Clock size={24} />
@@ -573,7 +598,7 @@ const RecipientDashboard = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const res = await axios.get('http://localhost:5000/api/recipient/profile', {
+        const res = await axios.get(`\${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/recipient/profile`, {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
         });
         setProfile(res.data);
@@ -611,7 +636,8 @@ const RecipientDashboard = () => {
               <HospitalFinder profile={profile} hospitals={hospitals} setHospitals={setHospitals} />
               <AIAssistant profile={profile} />
 
-              {/* Row 3: Appointment Booking */}
+              {/* Row 3: Blood Availability Checker & Appointment Booking */}
+              <BloodAvailabilityChecker />
               <AppointmentBooking hospitals={hospitals} />
             </>
           ) : (

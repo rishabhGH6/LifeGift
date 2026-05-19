@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Shield, Clock, HeartHandshake, CheckCircle } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import './Features.css';
 
 const features = [
@@ -22,6 +23,8 @@ const features = [
 ];
 
 const Features = () => {
+  const navigate = useNavigate();
+
   return (
     <section className="features-section" id="about">
       <div className="container">
@@ -79,7 +82,7 @@ const Features = () => {
               <li><CheckCircle color="var(--accent-red)" size={20}/> <span>Discuss decision with family</span></li>
               <li><CheckCircle color="var(--accent-red)" size={20}/> <span>Save lives when the time comes</span></li>
             </ul>
-            <button className="btn-primary" style={{marginTop: '20px'}}>Start Registration</button>
+            <button className="btn-primary" style={{marginTop: '20px'}} onClick={() => navigate('/login?type=donor')}>Start Registration</button>
           </div>
           <div className="process-image">
             {/* Using a modern CSS representation instead of an image to fit 3D aesthetic */}

@@ -2,6 +2,7 @@ import React, { useRef } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight, Activity, Users, Droplet } from 'lucide-react';
 import { Canvas, useFrame } from '@react-three/fiber';
+import { useNavigate } from 'react-router-dom';
 import { Sphere, MeshDistortMaterial, Float, Stars } from '@react-three/drei';
 import './Hero.css';
 
@@ -40,6 +41,8 @@ const BlueSphere = () => {
 };
 
 const Hero = () => {
+  const navigate = useNavigate();
+
   return (
     <section className="hero" id="home">
       <div className="canvas-container">
@@ -74,10 +77,10 @@ const Hero = () => {
           </p>
 
           <div className="hero-actions">
-            <button className="btn-primary btn-large">
+            <button className="btn-primary btn-large" onClick={() => navigate('/login?type=donor')}>
               Become a Donor <ArrowRight size={20} />
             </button>
-            <button className="btn-secondary btn-large">
+            <button className="btn-secondary btn-large" onClick={() => navigate('/login?type=recipient')}>
               Request Resources
             </button>
           </div>

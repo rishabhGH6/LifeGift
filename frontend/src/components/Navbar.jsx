@@ -33,9 +33,9 @@ const Navbar = () => {
         </Link>
 
         <div className="desktop-menu">
-          <Link to="/#about" className="nav-link">About</Link>
+          <Link to="/about" className="nav-link">About</Link>
           <Link to="/#process" className="nav-link">How it Works</Link>
-          <Link to="/#impact" className="nav-link">Impact</Link>
+          <Link to="/impact" className="nav-link">Impact</Link>
           <button className="btn-secondary" onClick={() => window.location.href = '/login'}>Login</button>
           <button className="btn-primary" onClick={() => window.location.href = '/login'}>Register</button>
         </div>
@@ -52,9 +52,9 @@ const Navbar = () => {
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          <Link to="/#about" className="nav-link" onClick={() => setMobileMenuOpen(false)}>About</Link>
+          <Link to="/about" className="nav-link" onClick={() => setMobileMenuOpen(false)}>About</Link>
           <Link to="/#process" className="nav-link" onClick={() => setMobileMenuOpen(false)}>How it Works</Link>
-          <Link to="/#impact" className="nav-link" onClick={() => setMobileMenuOpen(false)}>Impact</Link>
+          <Link to="/impact" className="nav-link" onClick={() => setMobileMenuOpen(false)}>Impact</Link>
           <div className="mobile-actions">
             <button className="btn-secondary w-full" onClick={() => window.location.href = '/login'}>Login</button>
             <button className="btn-primary w-full" onClick={() => window.location.href = '/login'}>Register</button>

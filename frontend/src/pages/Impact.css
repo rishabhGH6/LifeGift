@@ -1,0 +1,123 @@
+.impact-container {
+  min-height: 100vh;
+  padding-top: 100px;
+  background-color: var(--bg-dark);
+  color: var(--text-light);
+  padding-bottom: 80px;
+}
+
+.impact-header {
+  text-align: center;
+  padding: 40px 20px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.impact-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
+  padding: 20px;
+}
+
+.col-span-2 {
+  grid-column: span 2;
+}
+
+.col-span-3 {
+  grid-column: span 3;
+}
+
+.impact-card {
+  padding: 40px;
+  border-radius: 24px;
+  display: flex;
+  flex-direction: column;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.card-header h2 {
+  font-size: 1.8rem;
+  margin: 0;
+}
+
+.icon-red { color: var(--accent-red); }
+.icon-blue { color: var(--accent-blue); }
+.icon-green { color: #10b981; }
+
+.stat-highlight {
+  font-size: 3.5rem;
+  font-weight: 800;
+  background: linear-gradient(90deg, var(--accent-red), var(--accent-blue));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 10px;
+  line-height: 1.1;
+}
+
+.stat-desc {
+  color: var(--text-muted);
+  font-size: 1.1rem;
+  line-height: 1.6;
+}
+
+.chart-title {
+  text-align: center;
+  color: var(--text-muted);
+  margin-bottom: 15px;
+  font-weight: 500;
+}
+
+.chart-container {
+  margin-top: auto;
+  padding-top: 30px;
+}
+
+.alert-box {
+  background: rgba(255, 60, 60, 0.1);
+  border: 1px solid rgba(255, 60, 60, 0.2);
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  gap: 15px;
+  align-items: flex-start;
+}
+
+.alert-box h4 {
+  color: var(--accent-red);
+  margin-bottom: 5px;
+}
+
+.alert-box p {
+  font-size: 0.95rem;
+  color: #ddd;
+}
+
+.max-w-2xl {
+  max-width: 42rem;
+}
+
+.mx-auto {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.mb-4 { margin-bottom: 1rem; }
+.mt-4 { margin-top: 1rem; }
+.text-center { text-align: center; }
+.text-muted { color: var(--text-muted); line-height: 1.6; font-size: 1.1rem;}
+
+@media (max-width: 1024px) {
+  .impact-grid {
+    grid-template-columns: 1fr;
+  }
+  .col-span-2, .col-span-3 {
+    grid-column: span 1;
+  }
+}

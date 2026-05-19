@@ -3,6 +3,7 @@ import authMiddleware from '../middleware/auth.js';
 import RecipientProfile from '../models/RecipientProfile.js';
 import SosRequest from '../models/SosRequest.js';
 import Appointment from '../models/Appointment.js';
+import HospitalProfile from '../models/HospitalProfile.js';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
 const router = express.Router();
@@ -39,6 +40,35 @@ router.post('/onboard', authMiddleware, async (req, res) => {
   } catch (err) {
     console.error('Recipient Onboarding Error:', err);
     res.status(500).json({ message: 'Failed to complete onboarding' });
+  }
+});
+
+/**
+ * GET /api/recipient/check-blood/:bloodGroup
+ * Check if the requested blood group is available in ANY hospital stock.
+ */
+router.get('/check-blood/:bloodGroup', authMiddleware, async (req, res) => {
+  try {
+    let { bloodGroup } = req.params;
+    bloodGroup = decodeURIComponent(bloodGroup);
+
+    // Default to false
+    let available = false;
+
+    // Find all hospitals
+    const hospitals = await HospitalProfile.find({});
+    
+    for (const hospital of hospitals) {
+      if (hospital.bloodInventory && hospital.bloodInventory[bloodGroup] > 0) {
+        available = true;
+        break;
+      }
+    }
+
+    res.json({ available, bloodGroup });
+  } catch (err) {
+    console.error('Blood Check Error:', err);
+    res.status(500).json({ message: 'Server Error' });
   }
 });
 
